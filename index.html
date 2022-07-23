@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title> Βαρύτητα</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.15.4/css/all.css">
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial;
+            user-select: none;
+            overflow: hidden;
+            margin: 0;
+        }
+
+        #myCanvas {
+            background-color: powderblue;
+            margin: none
+        }
+
+        .settings {
+            margin-top: 10px;
+        }
+
+        .top {
+            margin: none;
+            position: fixed;
+            top: 0%;
+            left: 0%;
+            background: #ffaaaa;
+            padding: 10px;
+            width: 100%;
+            transition: 0.5s;
+        }
+
+        .button {
+            border: 3px #2196f3 solid;
+            background: #2196f3;
+            padding: 6px 12px;
+            font: 12px Arial;
+            border-radius: 20em;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .button:hover {
+            background: white;
+            color: black;
+        }
+
+        .button:active {
+            transform: scale(0.9, 0.9);
+        }
+
+        .settings-gravity {
+            border: 2px green solid;
+            background: green;
+            padding: 4px 12px;
+            border-top-right-radius: 7px;
+            border-bottom-right-radius: 7px;
+            color: white;
+        }
+
+        .settings-mass {
+            border: 2px green solid;
+            padding: 4px 12px;
+            border-top-left-radius: 7px;
+            border-bottom-left-radius: 7px;
+            border-right: none;
+        }
+
+        #mass_t {
+            border: 3px solid black;
+            padding: 2px;
+            background: black;
+            color: white;
+            margin-right: -17px;
+        }
+
+        #bri {
+            border: 3px solid black;
+            padding: 2px;
+            background: black;
+            color: white;
+            margin-right: -13px;
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px;
+        }
+
+        #triangle-up {
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-bottom: 7.5px solid black;
+            backround: #ffaaaa;
+
+            display: inline-block;
+            transition: 0.5s;
+        }
+
+        .triangle-container {
+            background: #ffaaaa;
+            padding: 8px 8px;
+            display: inline;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+
+
+        }
+
+        .triangle-back {
+            text-align: left;
+            transform: translate(0px, 25px);
+        }
+
+        .rotated {
+            transform: rotate(180deg);
+        }
+        .reset {
+            margin-left: 7px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="top">
+        <div class="controls">
+            <button id="select" class="button">Επιλογή αντικειμένου <i class="fas fa-upload"></i></button>
+            <button class="button" onclick="clearInterval(inter);start()">Restart <i class="fas fa-redo-alt"></i></button>
+        </div>
+        <div class="settings">
+            <span class="settings-mass">
+                <span>Μάζα αντικειμένου:</span>
+                <input oninput="mass_t.innerHTML=this.value" id="mass" type="range" min=1 max=100>
+                <span id="mass_t">50</span>
+            </span>
+            <span class="settings-gravity">
+                <span>Βαρύτητα:</span>
+                <input id="grav" type="range" min=1 max=100 oninput="bri.innerHTML=this.value*10;">
+                <span id="bri">500</span>
+            </span>
+            <buttton id="reset" class="reset button"><i class="fas fa-sync-alt"></i></buttton>
+        </div>
+        
+        <div class="triangle-back">
+            <span class="triangle-container">
+                <span id="triangle-up">
+
+                </span>
+            </span>
+        </div>
+    </div>
+    <br class="br">
+    <br class="br">
+    <br class="br">
+    <br class="br">
+    <br class="br">
+    <canvas id="myCanvas" width=600 height=500>
+    </canvas>
+
+
+
+    <script>
+        var canvash = 90
+        var fileselector = document.createElement("input");
+        var cusid_ele = document.getElementsByClassName('br');
+        myCanvas.width = window.innerWidth;
+        myCanvas.height = window.innerHeight - canvash;
+        fileselector.setAttribute("type", "file");
+        fileselector.setAttribute("accept", "image/*");
+        fileselector.addEventListener("change", function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.addEventListener("load", function(event) {
+                    imga = event.target.result;
+
+                });
+                reader.readAsDataURL(file);
+            }
+        });
+        document.getElementById("select").onclick = function() {
+            fileselector.click();
+        };
+        window.onresize = function() {
+            myCanvas.width = window.innerWidth;
+            myCanvas.height = window.innerHeight - canvash;
+        };
+        document.getElementById("reset").onclick = function() {
+            document.getElementById("grav").value = 50;
+            document.getElementById("mass").value = 50;
+            document.getElementById("mass_t").innerHTML = document.getElementById("mass").value;
+            document.getElementById("bri").innerHTML = document.getElementById("grav").value * 10;
+        }
+        document.getElementsByClassName("triangle-container")[0].onclick = function() {
+            if (!document.getElementById("triangle-up").className.includes("rotated")) {
+                document.getElementById("triangle-up").className = "rotated"
+                document.getElementsByClassName("top")[0].style.top = "-" + Number(document.getElementsByClassName("top")[0].clientHeight) + "px"
+                canvash = 0
+                myCanvas.width = window.innerWidth;
+                myCanvas.height = window.innerHeight - canvash;
+                for (var i = 0; i < cusid_ele.length; ++i) {
+                    var item = cusid_ele[i];
+                    item.style.display = "none"
+                }
+            } else {
+                document.getElementById("triangle-up").className = ""
+                document.getElementsByClassName("top")[0].style.top = "0%"
+                canvash = 90
+                myCanvas.width = window.innerWidth;
+                myCanvas.height = window.innerHeight - canvash;
+                setTimeout(function() {
+                    for (var i = 0; i < cusid_ele.length; ++i) {
+                        var item = cusid_ele[i];
+                        item.style.display = "block"
+                    }
+                }, 500)
+            }
+        }
+    </script>
+    <script>
+        var canvas = document.getElementById("myCanvas");
+        var imga = "https://s2js.com/img/etc/tennis-ball.png";
+        var inter;
+
+        function start() {
+            var ctx = myCanvas.getContext("2d"); // Get the drawing context for the canvas
+            var FPS = 40; // How many frames per second
+
+            function MySprite(img_url, bounce) {
+                this.x = 0;
+                this.y = 0;
+                this.visible = true;
+                this.velocity_x = 0;
+                this.velocity_y = 0;
+                this.bounciness = bounce;
+                this.MyImg = new Image();
+                this.MyImg.src = img_url;
+                this.hRatio = 50 / this.MyImg.width;
+                this.vRatio = 50 / this.MyImg.height;
+                this.ratio = Math.min(this.hRatio, this.vRatio);
+                console.log("Initialized");
+            }
+
+
+            MySprite.prototype.Do_Frame_Things = function() {
+                this.bounciness = (100 - document.getElementById("mass").value) / 100;
+                if (this.visible) ctx.drawImage(this.MyImg, this.x, this.y, this.MyImg.width * this.ratio, this.MyImg.height * this.ratio); // draw the thing
+                this.x = this.x + this.velocity_x;
+                this.y = this.y + this.velocity_y; // move the thing
+
+                if (this.x < 0) {
+                    this.velocity_x = -this.velocity_x;
+                }; // bounce off sides
+                if (this.x + this.MyImg.width * this.ratio > myCanvas.width) {
+                    this.velocity_x = -this.velocity_x;
+                };
+
+                if (this.y + this.MyImg.height * this.ratio > myCanvas.height) {
+                    var overrun = this.y + this.MyImg.height * this.ratio - myCanvas.height; // calculate overrun
+                    this.velocity_y = this.velocity_y - (overrun / this.velocity_y * gravity); //adjust
+                    this.y = this.y - overrun; // be exactly at the bottom
+                    this.velocity_y = -this.velocity_y * this.bounciness; // bounce off the bottom 
+                    this.velocity_x = this.velocity_x * this.bounciness // also slow horizontally
+                } else {
+                    // accelerate by gravity, but only if we're not actually bouncing at this moment
+                    this.velocity_y = this.velocity_y + gravity;
+                }
+            }
+
+            var gravity = 5.0;
+            setInterval(function() {
+                gravity = grav.value / 10;
+            })
+            var tennis = new MySprite(imga, 1);
+            tennis.MyImg.onload = function() {
+                tennis.velocity_x = 3;
+
+                function Do_a_Frame() {
+                    ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+                    tennis.Do_Frame_Things();
+                }
+                inter = setInterval(Do_a_Frame, 1000 / FPS); // set my frame renderer
+            }
+        };
+        start();
+    </script>
+</body>
+
+</html>
