@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title> Βαρύτητα</title>
+    <title>Gravity</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.15.4/css/all.css">
     <style>
@@ -128,17 +128,17 @@
 <body>
     <div class="top">
         <div class="controls">
-            <button id="select" class="button">Επιλογή αντικειμένου <i class="fas fa-upload"></i></button>
+            <button id="select" class="button">Select object <i class="fas fa-upload"></i></button>
             <button class="button" onclick="clearInterval(inter);start()">Restart <i class="fas fa-redo-alt"></i></button>
         </div>
         <div class="settings">
             <span class="settings-mass">
-                <span>Μάζα αντικειμένου:</span>
+                <span>Object mass:</span>
                 <input oninput="mass_t.innerHTML=this.value" id="mass" type="range" min=1 max=100>
                 <span id="mass_t">50</span>
             </span>
             <span class="settings-gravity">
-                <span>Βαρύτητα:</span>
+                <span>Gravity:</span>
                 <input id="grav" type="range" min=1 max=100 oninput="bri.innerHTML=this.value*10;">
                 <span id="bri">500</span>
             </span>
